@@ -1,6 +1,15 @@
+package Client;
+
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+
+// classes in differnet folders
+import Games.CountryGuess;
+import Games.TicTacToe;
+import Games.Typeracer;
 
 public class Client {
 
@@ -8,6 +17,11 @@ public class Client {
 	private BufferedReader bufferedReader;
 	private BufferedWriter bufferedWriter;
 	private String username;
+	private String messageToSend;
+	// ANSI Colour code
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_RESET = "\u001B[0m";
+
 
 	// Constructor
 	public Client(Socket socket, String username) {
@@ -41,14 +55,23 @@ public class Client {
 			Scanner scan = new Scanner(System.in);
 
 			while (socket.isConnected()) {
-				String messageToSend = scan.nextLine();
-				bufferedWriter.write(username + ": " + messageToSend);
+				messageToSend = scan.nextLine();
+				// checks if user wants to play for games
+				checkMessageForGames();
+				bufferedWriter.write(username + ": " + messageToSend + ANSI_RESET + " " + getSystemDateAndTime() + ANSI_RESET);
 				bufferedWriter.newLine();
 				bufferedWriter.flush();
 			}
 		} catch (IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}
+	}
+
+	private String getSystemDateAndTime() {
+		// returns dateand time at that instant in format dd/MM HH:mm:ss
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
+		return ANSI_GREEN + now.format(formatter);
 	}
 
 
@@ -89,21 +112,40 @@ public class Client {
 		}
 	}
 
+	private void checkMessageForGames() {
+		if (messageToSend.equalsIgnoreCase("play capital")) {
+			runCaptalGuessingGame();
+		}
+		if (messageToSend.equalsIgnoreCase("play tictactoe")) {
+			runTicTacToe();
+		}if (messageToSend.equalsIgnoreCase("play typeracer")) {
+			Typeracer.typeracer();
+		}
+	}
+
+	private void runCaptalGuessingGame() {
+		CountryGuess user = new CountryGuess(username);
+		user.startGame();
+	}
+
+	private void runTicTacToe() {
+		TicTacToe.startTicTacToe();
+	}
+
+
 	public static void main(String[] args) throws IOException {
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Enter your username for the group chat: ");
 		String username = scan.nextLine();
 
-
-		Socket clientSocket = new Socket("localhost", 12345);
+		Socket clientSocket = new Socket(fetchIP.recieveIP(), 12345);
 		Client client = new Client(clientSocket, username);
 		client.sendMessage(username);
 
-		// Both these methods are blocking methods,so each ,method is run
+		// Both these methods are blocking methods,so each method is run
 		// on a separate thread so the process is concurrent (i.e. sending and
 		// receiving messages)
 		client.listenForMessage();
 		client.sendMessage();
-
 	}
 }
