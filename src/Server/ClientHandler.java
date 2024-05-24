@@ -51,6 +51,7 @@ public final class ClientHandler implements Runnable {
 				// // broadcastMessageToClients(messageFromClients);
 				broadcastMessage(messageFromClients);
 			} catch (IOException e){
+				System.out.println("Client disconnected");
 				closeAll(socket, bufferedReader, bufferedWriter);
 				break;
 			}
@@ -81,7 +82,6 @@ public final class ClientHandler implements Runnable {
         }
 
         private String processInput(String input) {
-
             HashMap<String, String> rmap = ParseMap.parse(input);
             String payload = rmap.get("payload");
 			/// means we dealing with a game
@@ -90,6 +90,17 @@ public final class ClientHandler implements Runnable {
                 rmap.put("type", game);
                 rmap.put("payload", "run");
             }
+			/// means we wanna save to server (leaderboard)
+			if (rmap.get("saveData") != null && "true".equals(rmap.get("saveData"))) {
+
+				if (rmap.get("type").equals("typeracer")) {
+					int u = SaveData.save(rmap);
+					rmap.put("payload", "leaderboard");
+					rmap.put("index", u+"");
+					rmap.put("leaderboard", SaveData.getLeaderboardString(u));
+				}
+			}
+
             return ParseMap.unparse(rmap);
         }
 

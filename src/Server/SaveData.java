@@ -4,42 +4,70 @@ import java.io.*;
 import java.util.*;
 
 public class SaveData {
-    public static void main(String[] args) {
-        System.out.println("Check");
-    }
-    public static void typeracer(String[][] data) {
-        // Save data to a file
-        try {
-            File file = new File("userData/typeracer/leaderboard.txt");
-            List<String> leaderboard = new ArrayList<>();
-            if (file.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
+    /// modify this function to work for you aswell
+    public static int save( HashMap<String, String> userData) {
+        System.out.println(System.getProperty("user.dir"));
+        File file = new File(System.getProperty("user.dir")+"/src/Server/userData/typeracer/leaderboard.txt");
+        List<String[]> leaderboard = new ArrayList<>();
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    leaderboard.add(line);
+                    leaderboard.add(line.split(";"));
                 }
-                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
 
-            for (String[] row : data) {
-                if (row[0] != null) {
-                    String name = row[0];
-                    String progress = row[1];
-                    String wpm = row[2];
-                    String accuracy = row[3];
-                    leaderboard.add(name + "," + progress + "," + wpm + "," + accuracy);
+        int wpm = Integer.parseInt(userData.get("wpm"));
+        int accuracy = Integer.parseInt(userData.get("accuracy"));
+        String username = userData.get("id");
+        int userScore = wpm + accuracy;
+        String[] userEntry = new String[]{username, String.valueOf(wpm), String.valueOf(accuracy), String.valueOf(userScore)};
+        int index = 0;
+
+        if (leaderboard.isEmpty()) {
+            leaderboard.add(userEntry);
+        } else {
+            for (; index < leaderboard.size(); index++) {
+                int currentScore = Integer.parseInt(leaderboard.get(index)[3]);
+                if (userScore > currentScore) {
+                    break;
                 }
             }
+            leaderboard.add(index, userEntry);
+        }
 
-            Collections.sort(leaderboard);
-
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file))) {
-                for (String entry : leaderboard) {
-                    bufferedWriter.write(entry);
-                    bufferedWriter.newLine();
-                }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (String[] data : leaderboard) {
+                writer.write(String.join(";", data));
+                writer.newLine();
             }
         } catch (IOException e) {
+            e.printStackTrace();
         }
+        return index;
+
+    }
+
+    /// modify this function to work for you aswell also both these functions should be combined into one // someone do it 
+
+    public static String getLeaderboardString(int highlightIndex) {
+        File file = new File(System.getProperty("user.dir")+"/src/Server/userData/typeracer/leaderboard.txt");
+
+        StringBuilder leaderboardString = new StringBuilder();
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    leaderboardString.append(line).append("-n-");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return leaderboardString.toString();
     }
 }
+

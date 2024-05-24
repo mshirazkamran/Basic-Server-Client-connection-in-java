@@ -68,8 +68,8 @@ def getInput(sentence , mode):
 
     convo_start_time = time.time()
     while len(sentence.replace("\n" , "")) > (len(st)):
-        if finished:  break
-        if((mode == "1" and time.time() - start_time >= 60) or (finished)): 
+        # if finished:  break
+        if((mode == "1" and time.time() - start_time >= 10) or (finished)): 
             text_file = open("convo.txt", "w")
             if(mode == '1'):
                 # x= f'{"Time= "} [{"#" *round( round(time.time()-start_time))}||{"_" * round(  (60 - round(time.time()-start_time)))}]\n'
@@ -153,52 +153,6 @@ def getInput(sentence , mode):
 
     return st , corrects ,  round(time.time() - start_time )
 
-# Function to update leader if user choses to
-def update_leaderboard(w_p_min , accuracy):
-    # Function will check if the current variable score is higher score than current iteration score  if so then insert the current user
-    # at that point
-
-    changedUserId = False
-    text_file = open("leaderboard.txt", "r")
-    lines = text_file.readlines()
-    userScore = (w_p_min + accuracy)
-
-    name = input("Enter your username  (Max 16 characters): ")
-    while len(name) > 16 and len(name) == 0: name = input("Enter your username  (Max 16 characters): ")
-# In case of an empty file
-    if(len(lines) == 0):
-        text_file.close()
-        lines = [f"{name},{round(w_p_min)},{round(userScore)}"]
-        text_file = open("leaderboard.txt", "w")
-        text_file.writelines(lines)
-        text_file.close()
-        return lines,0
-    
-# If last person has better score then dont execute loop
-    minScore = int(lines[-1].split(",")[-1])
-    if (minScore) >= userScore :
-        print("Last score")
-        text_file.close()
-        lines.append( f"\n{name},{round(w_p_min)},{round(userScore)}")
-        print(lines)
-        text_file = open("leaderboard.txt", "w")
-        text_file.writelines(lines)
-        text_file.close()
-        return lines,len(lines) - 1
-# In case the user lies in between
-    for index,el in enumerate(lines):
-        current_i_score = int(el.split(",")[-1])
-        if(userScore > current_i_score ):
-            changedUserId = index
-            lines.insert(index , f"{name},{round(w_p_min)},{round(userScore)}\n")
-            break
-    text_file.close()
-    text_file = open("leaderboard.txt", "w")
-    print("lines" , lines)
-    text_file.writelines(lines)
-    text_file.close()
-    return lines , changedUserId
-
 # Function to calculate typing speed in WPM
 def calculate_wpm(time_taken, sentence):
     sentence_length = len(sentence)
@@ -206,22 +160,6 @@ def calculate_wpm(time_taken, sentence):
     words = sentence_length / 5
     return words / time_in_mins
 
-# Function to print leaderboard in a tabular form
-def print_leaderboard(leaderboard,userI):
-    lines = leaderboard
-    print(f'{"Position": <10}|    {"Name": <20}    |    {"Words Per Minute": <20}    |    {"Accuracy": <20}')
-    print(f'--------------------------------------------------------------------------------------------')
-    for index,el in enumerate(lines):
-        el = el.replace("\n","")
-        if el == "": continue
-        if(userI == index):
-            s = f'    {index + 1: 4d}  |    {el.split(",")[0]: <20}    |     {el.split(",")[1]: <20}    |     {f"{(int(el.split(",")[2])-int(el.split(",")[1]))}": <20} '
-            click.echo(click.style(s , fg="green"))
-            print("-" * ( len(s) - 10))
-            continue
-        s = f'    {index + 1: 4d}  |    {el.split(",")[0]: <20}    |     {(el.split(",")[1]): <20}    |     {f"{(int(el.split(",")[2])-int(el.split(",")[1]))}": <20} '
-        print(s)
-        print("-" * ( len(s) - 10))
 
 # Main Function Of The Program
 def begin():
