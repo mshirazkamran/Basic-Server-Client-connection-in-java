@@ -37,27 +37,13 @@ public class Typeracer {
 				break;
 			}
 		}
-		typeracer_printUsers(data);
-	}
-
-	private static void typeracer_printUsers(String[][] data) {
-		System.out.format("Initializing GUI %s", "🔮🎉😂🎊");
-
 		lb.updateLeaderboardWithData(data);
-
-		// System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-		// System.out.println("   Name                 |       Progress         |  Words Per Minute(WPM) |     Accuracy    ");
-		// System.out.println("--------------------------------------------------------------------------------------------");
-		// for (String[] row : data) {
-		// 	if (row[0] != null) {
-		// 		String name = row[0];
-		// 		String progress = row[1];
-		// 		String wpm = row[2];
-		// 		String accuracy = row[3];
-		// 		System.out.format("%-24s|%-24s|%-24s|%-24s\n", name, (progress), (wpm), accuracy);
-		// 	}
-		// }
+		// typeracer_printUsers(data);
 	}
+
+	// private static void typeracer_printUsers(String[][] data) {
+	// 	lb.updateLeaderboardWithData(data);
+	// }
 
 	private void printLeaderboard(HashMap<String, String> data) {
 		String leaderboardS = data.get("leaderboard");
