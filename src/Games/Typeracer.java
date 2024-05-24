@@ -20,8 +20,8 @@ public class Typeracer {
 		Typeracer.out = WriteServer;
 	}
 
-	public void typeracer_handleData(HashMap<String, String> parsedMessage, String id ) {
-		// boolean rowIsEmpty = data[0][0] == null;
+	public void typeracer_handleData(HashMap<String, String> parsedMessage) {
+		String id = parsedMessage.get("id");
 		for (int i = 0; i < data.length; i++) {
 			boolean rowIsEmpty = data[i][0] == null;
 			if (data[i][0] != null && id.equals(data[i][0])) {
@@ -38,12 +38,7 @@ public class Typeracer {
 			}
 		}
 		lb.updateLeaderboardWithData(data);
-		// typeracer_printUsers(data);
 	}
-
-	// private static void typeracer_printUsers(String[][] data) {
-	// 	lb.updateLeaderboardWithData(data);
-	// }
 
 	private void printLeaderboard(HashMap<String, String> data) {
 		String leaderboardS = data.get("leaderboard");
@@ -86,9 +81,8 @@ public class Typeracer {
 			tr.typeracer(username)
 			).start();
 		}else if("data".equals(msg.get("payload"))){
-			tr.typeracer_handleData(msg , username);
+			tr.typeracer_handleData(msg);
 		}else if("leaderboard".equals(msg.get("payload"))){
-			System.out.println("Leaderboard" + msg.get("leaderboard"));
 			if (username.equals(msg.get("id"))){
 				tr.printLeaderboard(msg);
 			}
@@ -124,7 +118,6 @@ public class Typeracer {
 					String accuracy = "100";
 					String leaderboard = "false";
 					while ((line = reader.readLine()) != null) {
-						System.out.println("Check line " + line);
 						if (line.contains("wpm")) {
 							wpm = line.split("=")[1];
 						}
@@ -163,7 +156,7 @@ public class Typeracer {
 				}
 			}
 			System.out.println("Game ended");
-
+			lb.closeGUI();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

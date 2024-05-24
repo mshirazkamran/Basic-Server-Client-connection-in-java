@@ -50,8 +50,12 @@ public class GUILeaderboard extends JFrame {
             }
             revalidate();
             repaint();
-            System.out.println("Total Rows Now: " + model.getRowCount());
 
+        });
+    }
+    public void closeGUI() {
+        SwingUtilities.invokeLater(() -> {
+            dispose();
         });
     }
 }

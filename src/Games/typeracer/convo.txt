@@ -1,3 +1,5 @@
-progress=16
-wpm=43
+progress=112
+wpm=16
 accuracy=100
+leaderboard=true
+stop
