@@ -1,12 +1,18 @@
 package Server;
+import Utils.broadcastIP;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class Server {
 
     private final ServerSocket serverSocket;
+    private static final Set<PrintWriter> ClientWriters = Collections.synchronizedSet(new HashSet<>());
 
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -20,7 +26,7 @@ public class Server {
                 Socket socket = serverSocket.accept();
                 System.out.println("A new Client has entered!");
                 ClientHandler clientHandler = new ClientHandler(socket);
-
+                clientHandler.init();
                 Thread t = new Thread(clientHandler);
                 t.start();
             }
@@ -39,14 +45,19 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
-
+    public static void addWriter(PrintWriter writer) {
+        ClientWriters.add(writer);
+    }
+    public static void removeWriter(PrintWriter writer) {
+        ClientWriters.remove(writer);
+    }
+    public static Set<PrintWriter> getWriters() {
+        return ClientWriters;
+    }
     // broadcasting ip in another thread so as to nor hamper the socket of main thread
     public static void uploadIP() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                broadcastIP.startBroadcasting(200);
-            }
+        new Thread(() -> {
+            broadcastIP.startBroadcasting(200);
         }).start();
     }
 

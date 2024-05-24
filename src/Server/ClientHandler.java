@@ -1,33 +1,43 @@
 package Server;
 
+import Utils.ParseMap;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
-public class ClientHandler implements Runnable {
+public final class ClientHandler implements Runnable {
 
 	private static final ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 	private Socket socket;
 	private BufferedReader bufferedReader;
 	private BufferedWriter bufferedWriter;
 	private String clientUsername;
+    private PrintWriter writer;
+	Set<PrintWriter> writers = Server.getWriters();
 
 
 	public ClientHandler(Socket socket) {
 
 		try {
 			this.socket = socket;
+			// saved for future possible use
+			this.writer = new PrintWriter(socket.getOutputStream(), true);
+
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			this.clientUsername = bufferedReader.readLine();
-			clientHandlers.add(this);
-			broadcastMessageToClients("SERVER: " + clientUsername + " has entered the chat!");
 
 		} catch (IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}
 	}
-
+	public void init() {
+        clientHandlers.add(this);
+		Server.addWriter(writer);
+        broadcastMessageToClients("SERVER: " + clientUsername + " has entered the chat!");
+    }
 
 	@Override
 	public void run() {
@@ -37,13 +47,59 @@ public class ClientHandler implements Runnable {
 		while (socket.isConnected()) {
 			try {
 				messageFromClients = bufferedReader.readLine();
-				broadcastMessageToClients(messageFromClients);
+				// handleClientCommunication(messageFromClients);
+				// // broadcastMessageToClients(messageFromClients);
+				broadcastMessage(messageFromClients);
 			} catch (IOException e){
 				closeAll(socket, bufferedReader, bufferedWriter);
 				break;
 			}
 		}
 	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //    private void handleClientCommunication(String messageFromClients) throws IOException {
+    //         try (Scanner in = new Scanner(socket.getInputStream())) {
+    //             while (messageFromClients != null) {
+    //                 String input = in.nextLine();
+    //                 broadcastMessage(messageFromClients);
+    //             }
+    //         }
+    //     }
+
+        private void broadcastMessage(String input) {
+            System.out.println("Received input: " + input);
+            for (PrintWriter client : writers) {
+                String message = processInput(input);
+                System.out.println("Broadcasting: " + message);
+                client.println(message);
+            }
+        }
+
+        private String processInput(String input) {
+
+            HashMap<String, String> rmap = ParseMap.parse(input);
+            String payload = rmap.get("payload");
+			/// means we dealing with a game
+            if (payload != null && payload.contains("play")) {
+				String game = payload.split(" ", -1)[1];
+                rmap.put("type", game);
+                rmap.put("payload", "run");
+            }
+            return ParseMap.unparse(rmap);
+        }
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 	public void broadcastMessageToClients(String messageToSend) {
 		for (ClientHandler client : clientHandlers) {
@@ -54,7 +110,6 @@ public class ClientHandler implements Runnable {
 					client.bufferedWriter.flush();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -62,6 +117,8 @@ public class ClientHandler implements Runnable {
 
 	public void removeClientHandler() {
 		clientHandlers.remove(this);
+		Server.removeWriter(writer);
+
 		broadcastMessageToClients("SERVER: " + clientUsername + " has left the chat!");
 	}
 
@@ -78,7 +135,6 @@ public class ClientHandler implements Runnable {
 				socket.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }

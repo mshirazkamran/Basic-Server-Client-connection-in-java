@@ -1,0 +1,8 @@
+umernisar,138,182
+u,65,165
+umernisar000,51,151
+umernisar,50,150
+umernisar99,20,120
+umer,1,101
+adfs,3,92
+umernisar0,4,16

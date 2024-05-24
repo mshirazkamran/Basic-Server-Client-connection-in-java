@@ -1,2 +1,0 @@
-progress=51
-wpm=5

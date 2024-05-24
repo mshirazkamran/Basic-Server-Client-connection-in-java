@@ -1,0 +1,4 @@
+progress=777
+wpm=0
+accuracy=100
+stop

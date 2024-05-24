@@ -1,8 +1,8 @@
 package Games;
-import java.util.*;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class CountryGuess {
 
@@ -40,7 +40,10 @@ public class CountryGuess {
 	//     countryGuess.setLeaderboard();
 	//     countryGuess.displayLeaderBoard();
 	// }
-
+	public static void handleGame(String username) {
+		CountryGuess user = new CountryGuess(username);
+		user.startGame();
+	}
 	public void startGame() {
 		readCountriesFromFile();
 		setGameDifficulty();
@@ -49,7 +52,6 @@ public class CountryGuess {
 		setLeaderboard();
 		displayLeaderBoard();
 	}
-
 
 	public String result() {
 		return clientName + " got " + correct + "/" + repeatGame + " points on " + getSystemDateAndTime();
@@ -63,9 +65,9 @@ public class CountryGuess {
 
 
 	private void readCountriesFromFile() {
+		String countriesFile = "src/Games/capitals/countries.txt";
 
-		String countriesFile = "textfiles/countries.txt";
-		String capitalsFile = "textfiles/capitals.txt";
+		String capitalsFile = "src/Games/capitals/capitals.txt";
 
 		String countrriesarray[] = new String[135];
 		String capitalssarray[] = new String[135];
@@ -198,7 +200,7 @@ public class CountryGuess {
 
 
 	private void setLeaderboard() {
-		try (BufferedWriter result = new BufferedWriter(new FileWriter("textfiles/leaderboard.txt", true))) {
+		try (BufferedWriter result = new BufferedWriter(new FileWriter("src/Games/capitals/leaderboard.txt", true))) {
 			result.append(result());
 			result.newLine();
 			result.append(" ");
@@ -209,7 +211,7 @@ public class CountryGuess {
 	}
 
 	private void displayLeaderBoard() {
-		try (BufferedReader reader = new BufferedReader (new FileReader("textfiles/leaderboard.txt"))) {
+		try (BufferedReader reader = new BufferedReader (new FileReader("src/Games/capitals/leaderboard.txt"))) {
 
 			String line;
 			while ((line = reader.readLine()) != null) {
