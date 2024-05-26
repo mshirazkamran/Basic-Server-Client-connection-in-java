@@ -28,6 +28,7 @@ public final class ClientHandler implements Runnable {
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			this.clientUsername = bufferedReader.readLine();
+
 		} catch (IOException e) {
 			closeAll(socket, bufferedReader, bufferedWriter);
 		}
@@ -108,10 +109,11 @@ public final class ClientHandler implements Runnable {
 
 
 	public void removeClientHandler() {
+
 		clientHandlers.remove(this);
 		Server.removeWriter(writer);
-
 		broadcastMessageToClients("SERVER: " + clientUsername + " has left the chat!");
+		
 	}
 
 	public void closeAll(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedwriter) {

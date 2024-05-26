@@ -61,7 +61,7 @@ public class Server {
         }).start();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void startServer() throws IOException {
 
         System.out.println("Server has started!");
         ServerSocket serverSocket = new ServerSocket(12345);

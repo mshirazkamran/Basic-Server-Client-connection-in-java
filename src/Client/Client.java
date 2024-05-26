@@ -58,7 +58,11 @@ public final class Client {
 				// checks if user wants to play for games
 				if (messageToSend.equalsIgnoreCase("exit")) {
                     break;
-                }
+
+                } else if(messageToSend.equalsIgnoreCase("play capital")) {
+					CountryGuess user = new CountryGuess(username);
+					user.startGame();
+				}
 				HashMap<String, String> messageMap = new HashMap<>();
 				messageMap.put("id", username);
 				messageMap.put("type", "general");
@@ -91,12 +95,9 @@ public final class Client {
 			e.printStackTrace();
 		}
 	}
-	// private Socket socket;
-	// private BufferedReader ReadServer;
-	// private BufferedWriter WriteServer;
-	// private String username;
-	// private String messageToSend;
 	
+
+
     private  void handleIncomingMessages() {
         try {
             while (socket.isConnected()) {
@@ -111,16 +112,13 @@ public final class Client {
 						case "typeracer":
 							Typeracer.handleGame(parsedMessage,username ,  WriteServer);
 							break;
-						case "capital":
-							CountryGuess.handleGame(username);
-							break;
 						case "tictactoe":
 							// handleGameDataMessage(data , parsedMessage);
 							break;
 	
 						// general type message
 						default:
-							handleDefaultMessage(parsedMessage );
+							handleDefaultMessage(parsedMessage);
 							break;
 					}
 				}
@@ -129,7 +127,6 @@ public final class Client {
 			e.printStackTrace();
 			e.getMessage();
 			closeAll(socket, ReadServer, WriteServer);
-
         }
     }
     
@@ -142,7 +139,8 @@ public final class Client {
             System.out.println("Something might have gone wrong. Data: " + parsedMessage);
         }
     }
-	public static void main(String[] args) throws IOException {
+	public static void startClient() throws IOException {
+
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Enter your username for the group chat: ");
 		String username = scan.nextLine();
