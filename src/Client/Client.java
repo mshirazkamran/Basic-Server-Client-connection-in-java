@@ -6,11 +6,10 @@ import Utils.ParseMap;
 import Utils.fetchIP;
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 // final makes unoverridable
-public final class Client {
+public class Client {
 
 	private Socket socket;
 	private BufferedReader ReadServer;
@@ -48,25 +47,27 @@ public final class Client {
 		}
 	}
 
-	// Client handler is waiting for this message in its constructor (line 20)
+	// Client handler is waiting for this message in its constructor (line 28)
 	// limitation will not start game for other users if send from one....! --------------------------!!! NOTE !!!-------------------------- FIXED
 	private void sendMessage() {
 		try {
 			Scanner scan = new Scanner(System.in);
 			while (socket.isConnected()) {
 				messageToSend = scan.nextLine();
-				// checks if user wants to play for games
+				// checks if user wants to play for games or exit
 				if (messageToSend.equalsIgnoreCase("exit")) {
                     break;
 
-                } else if(messageToSend.equalsIgnoreCase("play capital")) {
+                } else if (messageToSend.equalsIgnoreCase("play capital")) {
 					CountryGuess user = new CountryGuess(username);
 					user.startGame();
 				}
+
 				HashMap<String, String> messageMap = new HashMap<>();
 				messageMap.put("id", username);
 				messageMap.put("type", "general");
 				messageMap.put("payload", messageToSend);
+
 				String serializedMessage = ParseMap.unparse(messageMap);
 				
 				/// write the message to the server
@@ -133,17 +134,20 @@ public final class Client {
     private  void handleDefaultMessage(HashMap<String, String> parsedMessage) {
         if (parsedMessage.containsKey("payload")) {
 			if (parsedMessage.containsKey("id") && !parsedMessage.get("id").equals(username)) {
-            System.out.println(parsedMessage.get("id") + " says " +parsedMessage.get("payload"));
+            System.out.println(parsedMessage.get("id") + " says " + parsedMessage.get("payload"));
 			}
         } else {
             System.out.println("Something might have gone wrong. Data: " + parsedMessage);
         }
     }
+
+
 	public static void startClient() throws IOException {
 
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Enter your username for the group chat: ");
 		String username = scan.nextLine();
+		// adding the timename to user so that every username is unique
 		long currentTimeMillis = System.currentTimeMillis();
 		username = username + "_" + currentTimeMillis;
 

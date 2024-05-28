@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class SaveData {
+    
     /// modify this function to work for you aswell
     public static int save( HashMap<String, String> userData) {
         System.out.println(System.getProperty("user.dir"));
