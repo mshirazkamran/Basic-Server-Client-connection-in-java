@@ -1,5 +1,3 @@
-progress=112
-wpm=16
-accuracy=100
-leaderboard=true
-stop
+progress=25
+wpm=26
+accuracy=94

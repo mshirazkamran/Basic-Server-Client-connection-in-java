@@ -5,12 +5,12 @@ import Server.*;
 import Client.*;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
 		System.out.println("Please specify your choice: ");
 
-		System.out.println("1. Run Server only\n " +
-				"2. Run Client only (Choose this option is Server is already running)\n " +
+		System.out.println("1. Run Server only\n" +
+				"2. Run Client only (Choose this option is Server is already running)\n" +
 				"3. Run Server and Client ");
 
 		Scanner scanner = new Scanner(System.in);

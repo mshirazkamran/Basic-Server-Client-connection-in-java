@@ -12,6 +12,7 @@ public class broadcastIP {
 			// Get the server's IP address
 			String ipAddress = InetAddress.getLocalHost().getHostAddress();
 			byte[] sendData = ipAddress.getBytes();
+			System.out.println("Server running at: " + ipAddress);
 
 			// Broadcast the server's IP address
 			DatagramPacket packet = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("255.255.255.255"), 8888);

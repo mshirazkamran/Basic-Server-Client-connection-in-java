@@ -141,8 +141,16 @@ public class Client {
         }
     }
 
+	private static Socket connectManually (Socket clienSocket) throws Exception  {
+		System.out.println("Connection failed, please enter IP manually: ");
+		Scanner scan = new Scanner(System.in);
+		String ip = scan.nextLine();
+		scan.close();
+		return new Socket(ip, 12345);
+	}
 
-	public static void startClient() throws IOException {
+
+	public static void startClient() throws Exception {
 
 		Scanner scan = new Scanner(System.in);
 		System.out.println("Enter your username for the group chat: ");
@@ -151,15 +159,38 @@ public class Client {
 		long currentTimeMillis = System.currentTimeMillis();
 		username = username + "_" + currentTimeMillis;
 
-		Socket clientSocket = new Socket(fetchIP.recieveIP(), 12345);
+		String serverIP = fetchIP.recieveIP();
+		Socket clientSocket = null;
+
+		// Attempt to connect to the server with the received IP
+		try {
+			clientSocket = new Socket(serverIP, 12345);
+		} catch (IOException e) {
+			// If connection fails, prompt user to enter the IP address manually
+			System.out.println("Failed to connect to the server at IP: " + serverIP);
+			System.out.println("Please enter the IP address manually: ");
+			serverIP = scan.nextLine();
+			try {
+				clientSocket = new Socket(serverIP, 12345);
+			} catch (IOException ex) {
+				System.out.println("Failed to connect to the server");
+			}
+		}
+
 		Client client = new Client(clientSocket, username);
 		client.sendMessage(username);
 
 		// Both these methods are blocking methods,so each method is run
 		// on a separate thread so the process is concurrent (i.e. sending and
 		// receiving messages)
-		new Thread(() -> client.handleIncomingMessages()).start();
-		// client.listenForMessage();
+		new Thread( new Runnable () {
+			@Override
+			public void run() {
+				client.handleIncomingMessages();
+			}
+		}).start();
+
+
 		client.sendMessage();
 	}
 }
