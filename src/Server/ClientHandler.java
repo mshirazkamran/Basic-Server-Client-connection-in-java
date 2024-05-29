@@ -46,6 +46,11 @@ public final class ClientHandler implements Runnable {
 		while (socket.isConnected()) {
 			try {
 				messageFromClients = bufferedReader.readLine();
+
+				//checks for capital guessing game
+				checkMessageForCapitalGame(messageFromClients);
+
+				//normal message
 				broadcastMessage(messageFromClients);
 			} catch (IOException e){
 				System.out.println("Client disconnected " + clientUsername);
@@ -63,6 +68,22 @@ public final class ClientHandler implements Runnable {
             client.println(message);
         }
     }
+
+
+	private void checkMessageForCapitalGame(String message) throws IOException {
+		
+		// saves data for capital guess and also fetches the results
+		ArrayList<String> results = SaveData.saveDataCapitals(message);
+		for (ClientHandler client : clientHandlers) {
+			if (client == this) {
+				for (String line : results) {
+					client.bufferedWriter.write(line);
+					client.bufferedWriter.newLine();
+					client.bufferedWriter.flush();
+				}
+			}
+		}
+	}
 
 
 	private String processInput(String input) {

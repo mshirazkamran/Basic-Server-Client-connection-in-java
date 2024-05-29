@@ -25,49 +25,20 @@ public class CountryGuess {
 		CountryGuess.clientName = clientName;
 	}
 
-	public CountryGuess() {
 
-	}
-
-	// public static void main(String[] args) {
-
-	//     CountryGuess user = new CountryGuess();
-
-	//     user.handleGame("hello");
-	// }
-
-	public void startGame() {
+	public String startGame() {
 
 		readCountriesFromFile();
 		setGameDifficulty();
 		guessCountry();
-		displayResult();
-		setLeaderboard();
-		displayLeaderBoard();
+
+		return result();
 
 	}
-
-	// public static void main(String[] args) {
-
-	// 	CountryGuess user = new CountryGuess();
-	// 	user.readCountriesFromFile();
-	// 	user.setGameDifficulty();
-	// 	user.guessCountry();
-	// 	user.displayResult();
-	// 	user.setLeaderboard();
-	// 	user.displayLeaderBoard();
-
-	// }
 
 
 	public String result() {
-		return clientName + " got " + correct + "/" + repeatGame + " points on " + getSystemDateAndTime();
-	}
-
-	private void displayResult() {
-		System.out.println("-------------------------------------------");
-		System.out.println(result());
-		System.out.println("-------------------------------------------");
+		return clientName + ":  got " + correct + "/" + repeatGame + " points on " + getSystemDateAndTime();
 	}
 
 
@@ -207,31 +178,5 @@ public class CountryGuess {
 			return "false";
 		}
 		return userInput;
-	}
-
-
-	private void setLeaderboard() {
-		try (BufferedWriter result = new BufferedWriter(new FileWriter("src/Games/capitals/leaderboard.txt", true))) {
-			result.append(result());
-			result.newLine();
-			result.append(" ");
-			result.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void displayLeaderBoard() {
-		try (BufferedReader reader = new BufferedReader (new FileReader("src/Games/capitals/leaderboard.txt"))) {
-
-			String line;
-			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
-			}
-			System.out.println("------------------------------------------");
-			reader.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }

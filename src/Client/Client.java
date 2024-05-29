@@ -57,11 +57,10 @@ public class Client {
 				// checks if user wants to play for games or exit
 				if (messageToSend.equalsIgnoreCase("exit")) {
                     break;
-
-                } else if (messageToSend.equalsIgnoreCase("play capital")) {
-					CountryGuess user = new CountryGuess(username);
-					user.startGame();
 				}
+
+				checkMesasgeForCapitalGame(messageToSend);
+
 
 				HashMap<String, String> messageMap = new HashMap<>();
 				messageMap.put("id", username);
@@ -96,8 +95,17 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
 
+	private void checkMesasgeForCapitalGame(String message) throws IOException {
+		if (message.equalsIgnoreCase("play capital")) {
+			CountryGuess user = new CountryGuess(username);
+			String result = user.startGame();
+			WriteServer.write(result); // result goes to client handler line 73
+			WriteServer.newLine();
+			WriteServer.flush();
+		}
+	}
+	
 
     private  void handleIncomingMessages() {
         try {
@@ -141,14 +149,6 @@ public class Client {
         }
     }
 
-	private static Socket connectManually (Socket clienSocket) throws Exception  {
-		System.out.println("Connection failed, please enter IP manually: ");
-		Scanner scan = new Scanner(System.in);
-		String ip = scan.nextLine();
-		scan.close();
-		return new Socket(ip, 12345);
-	}
-
 
 	public static void startClient() throws Exception {
 
@@ -159,10 +159,10 @@ public class Client {
 		long currentTimeMillis = System.currentTimeMillis();
 		username = username + "_" + currentTimeMillis;
 
-		String serverIP = fetchIP.recieveIP();
+		String serverIP = fetchIP.recieveIP(); // fetching ipfrom server which is broadcasting ip
 		Socket clientSocket = null;
 
-		// Attempt to connect to the server with the received IP
+
 		try {
 			clientSocket = new Socket(serverIP, 12345);
 		} catch (IOException e) {
@@ -183,13 +183,12 @@ public class Client {
 		// Both these methods are blocking methods,so each method is run
 		// on a separate thread so the process is concurrent (i.e. sending and
 		// receiving messages)
-		new Thread( new Runnable () {
-			@Override
+		new Thread( new Runnable () { // Anonymous Inner class
+			@Override 
 			public void run() {
 				client.handleIncomingMessages();
 			}
 		}).start();
-
 
 		client.sendMessage();
 	}

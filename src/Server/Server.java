@@ -60,7 +60,7 @@ public class Server {
 
     // broadcasting ip in another thread so as to not hamper the socket of main thread
     public static void uploadIP() {
-        new Thread(new Runnable() {
+        new Thread(new Runnable() { // Anonymous Inner class
             @Override
             public void run() {
                 broadcastIP.startBroadcasting(200);
