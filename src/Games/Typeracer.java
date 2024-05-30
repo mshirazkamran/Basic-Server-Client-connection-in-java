@@ -84,9 +84,11 @@ public class Typeracer {
             System.out.println("Game not typeracer or ID is null " + msg.get("id"));
         }
 	}
+
+	
 	public  void typeracer(String id) {
 		try {
-			String command = "start powershell.exe -NoExit -Command \"cd src/Games/typeracer ; python dependencies.py ; python Typeracer.py\"";
+			String command = "start powershell.exe -Command \"cd src/Games/typeracer ; python dependencies.py ; python Typeracer.py\"";
 			// String command = "start powershell.exe -NoExit -Command \" python dependencies.py ; python Typeracer.py\"";
 
 			ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", command);
@@ -96,14 +98,14 @@ public class Typeracer {
 
 			String filePath = "src/Games/typeracer/convo.txt";
 			boolean stop = false;
-
+			Thread.sleep(5000);
 			while (true) {
 				if (stop) {
 					p.destroy();
 					p.destroyForcibly();
 					break;
 				}
-				Thread.sleep(5000);
+				Thread.sleep(2000);
 				try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
 					String line;
 					String wpm = "0";
@@ -149,8 +151,9 @@ public class Typeracer {
 					System.err.println("Error reading file: " + e.getMessage());
 				}
 			}
-			System.out.println("Game ended");
 			lb.closeGUI();
+			System.out.println("Game ended");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
