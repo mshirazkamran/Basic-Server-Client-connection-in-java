@@ -5,8 +5,8 @@ import java.util.*;
 
 public class SaveData {
     
-    /// modify this function to work for you aswell
-    public static int save (HashMap<String, String> userData) {
+    
+    public static int saveDataForTyperacer (HashMap<String, String> userData) {
         System.out.println(System.getProperty("user.dir"));
         File file = new File(System.getProperty("user.dir")+"/src/Server/userData/typeracer/leaderboard.txt");
         List<String[]> leaderboard = new ArrayList<>();
@@ -55,7 +55,7 @@ public class SaveData {
 
 
 
-    public static String getLeaderboardString(int highlightIndex) {
+    public static String getLeaderboardStringForTyperacer(int highlightIndex) {
         File file = new File(System.getProperty("user.dir")+"/src/Server/userData/typeracer/leaderboard.txt");
 
         StringBuilder leaderboardString = new StringBuilder();
@@ -72,6 +72,7 @@ public class SaveData {
         return leaderboardString.toString();
     }
 
+
     public static ArrayList<String> saveDataCapitals(String messageFromClients) {
 
         ArrayList <String> resultData = new ArrayList<>();
@@ -80,6 +81,7 @@ public class SaveData {
             try {
                 BufferedWriter resultWriter = new BufferedWriter(new FileWriter(filepath, true));
                 resultWriter.append(messageFromClients);
+                resultWriter.newLine();
                 resultWriter.close();
 
                 BufferedReader reader = new BufferedReader(new FileReader(filepath));

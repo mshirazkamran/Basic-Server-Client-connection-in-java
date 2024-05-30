@@ -1,9 +1,7 @@
 package Client;
 
-import Games.CountryGuess;
-import Games.Typeracer;
-import Utils.ParseMap;
-import Utils.fetchIP;
+import Games.*;
+import Utils.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
@@ -16,10 +14,6 @@ public class Client {
 	private BufferedWriter WriteServer;
 	private String username;
 	private String messageToSend;
-
-	// ANSI Colour code
-	public static final String ANSI_GREEN = "\u001B[32m";
-	public static final String ANSI_RESET = "\u001B[0m";
 
 
 	// Constructor
@@ -47,8 +41,7 @@ public class Client {
 		}
 	}
 
-	// Client handler is waiting for this message in its constructor (line 28)
-	// limitation will not start game for other users if send from one....! --------------------------!!! NOTE !!!-------------------------- FIXED
+
 	private void sendMessage() {
 		try {
 			Scanner scan = new Scanner(System.in);
@@ -59,7 +52,7 @@ public class Client {
                     break;
 				}
 
-				checkMesasgeForCapitalGame(messageToSend);
+				checkMesasgeForLocalGames(messageToSend);
 
 
 				HashMap<String, String> messageMap = new HashMap<>();
@@ -96,13 +89,17 @@ public class Client {
 		}
 	}
 
-	private void checkMesasgeForCapitalGame(String message) throws IOException {
+	private void checkMesasgeForLocalGames(String message) throws IOException {
+
 		if (message.equalsIgnoreCase("play capital")) {
-			CountryGuess user = new CountryGuess(username);
+			CapitalGuess user = new CapitalGuess(username);
 			String result = user.startGame();
 			WriteServer.write(result); // result goes to client handler line 73
 			WriteServer.newLine();
 			WriteServer.flush();
+
+		} else if (message.equalsIgnoreCase("play tictactoe")) {
+			TicTacToe.startTicTacToe();
 		}
 	}
 	
@@ -111,6 +108,9 @@ public class Client {
         try {
             while (socket.isConnected()) {
                 String message = ReadServer.readLine();
+				// if (messageToSend.equalsIgnoreCase("play capital")) {
+				// 	return;
+				// }
                 HashMap<String, String> parsedMessage = ParseMap.parse(message);
                
                 String messageType = parsedMessage.get("type");
@@ -121,11 +121,6 @@ public class Client {
 						case "typeracer":
 							Typeracer.handleGame(parsedMessage,username ,  WriteServer);
 							break;
-						case "tictactoe":
-							// handleGameDataMessage(data , parsedMessage);
-							break;
-	
-						// general type message
 						default:
 							handleDefaultMessage(parsedMessage);
 							break;
@@ -159,7 +154,7 @@ public class Client {
 		long currentTimeMillis = System.currentTimeMillis();
 		username = username + "_" + currentTimeMillis;
 
-		String serverIP = fetchIP.recieveIP(); // fetching ipfrom server which is broadcasting ip
+		String serverIP = fetchIP.recieveIP(); // fetching ipfrom server who is broadcasting ip
 		Socket clientSocket = null;
 
 

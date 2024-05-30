@@ -7,6 +7,7 @@ import java.util.*;
 
 public final class ClientHandler implements Runnable {
 
+	// static because we only need to the arraylist to link to the class itself
 	private static final ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 	private Socket socket;
 	private BufferedReader bufferedReader;
@@ -33,6 +34,8 @@ public final class ClientHandler implements Runnable {
 
 
 	}
+
+	// adding writers for client handler and server
 	public void init() {
         clientHandlers.add(this);
 		Server.addWriter(writer);
@@ -100,20 +103,16 @@ public final class ClientHandler implements Runnable {
 		if (rmap.get("saveData") != null && "true".equals(rmap.get("saveData"))) {
 
 			if (rmap.get("type").equals("typeracer")) {
-				int u = SaveData.save(rmap);
+				int u = SaveData.saveDataForTyperacer(rmap);
 				rmap.put("payload", "leaderboard");
 				rmap.put("index", u+"");
-				rmap.put("leaderboard", SaveData.getLeaderboardString(u));
+				rmap.put("leaderboard", SaveData.getLeaderboardStringForTyperacer(u));
 			}
 		}
 		
 		return ParseMap.unparse(rmap);
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void broadcastMessageToClients(String messageToSend) {

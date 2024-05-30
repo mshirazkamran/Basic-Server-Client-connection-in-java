@@ -1,14 +1,8 @@
 package Games;
 
-import Utils.GUILeaderboard;
-import Utils.ParseMap;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import Utils.*;
+import java.io.*;
+import java.util.*;
 
 public class Typeracer {
 	private static BufferedWriter out;
